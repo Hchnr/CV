@@ -205,6 +205,7 @@
     <li><strong>具身 VLM/VLA 模型训练优化。</strong>负责 RoboBrain2（7B/32B）从 DeepSpeed 迁移至 Megatron-LM（FlagScale-Train），适配 DP/TP/PP 并行策略；设计非均匀流水线并行（减少 ViT 所在 PP-Stage 的 LLM 层数）解决 ViT 显存瓶颈；落地 Energon + WebDataset 数据管线，数据加载预处理延时降低 90%；通过内存分配预处理解决显存碎片化问题，ViT 开启 Re-Computation 降低显存峰值。端到端训练加速比 154.81%（对比 Llama-Factory/DeepSpeed）。针对 VLA（Robotics 3.3B）后训练，完成 Lerobot 数据集到 Energon 的适配，排查冻结 VLM 后吞吐不及理论预期（实际 50% vs 理论 66.7%）的原因。</li>
     <li><strong>具身模型推理部署与量化。</strong>对 RoboBrain2 和 VLA 模型采用 INT8 Weight-Only 量化（ViT 全精度 + LLM W8A16），端到端具身任务推理延时降低约 30%；在 H100 上 Prefill 阶段延时 -37.5%，在 4090 上 Decode 阶段延时 -24%。支持松灵双机械臂真机部署，打通 FlagEval 评测框架的具身 VLA 真机评测流程。</li>
     <li><strong>RoboOS 端云协同优化。</strong>基于 Redis 订阅/发布 + Socket 中断替换原生共享内存轮询方案，支持跨机通信与 Slave 并发执行，平均通信延迟降低至 &lt;3ms；实现基于 SentenceTransformers 的技能语义检索，总 Token 使用量降低 29.8%；机器人技能注册标准化，典型场景输入 Token 减少 65%。</li>
+    <li><strong>FLM-Audio 流式语音对话模型推理优化。</strong>对端到端流式语音模型（Mimi 音频编解码器 + LM Backbone + Depformer 自回归解码）进行 Profiling 与推理加速。通过 torch.compile 端到端推理延时降低 48%（95ms→49ms/帧）。设计多客户端并发架构：模型权重全局共享，per-client 隔离 KV Cache / 流式状态 / 环形缓冲区，通过线程池 + 推理队列实现多会话并发推理。</li>
   </ul>
 </div>
 
